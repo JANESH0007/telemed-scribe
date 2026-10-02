@@ -1,0 +1,37 @@
+[
+  {
+    "audio_file": "audio/hi_consultation_01.wav",
+    "reference_transcript": "नमस्ते, मैं डॉक्टर शर्मा हूँ। आप कैसे हैं? आपको क्या तकलीफ है?",
+    "language": "hindi",
+    "speaker_context": "doctor",
+    "notes": "Standard Hindi consultation greeting"
+  },
+  {
+    "audio_file": "audio/hi_consultation_02.wav",
+    "reference_transcript": "मुझे तीन दिन से बुखार है। शरीर में दर्द भी है और कभी कभी सर दर्द भी होता है।",
+    "language": "hindi",
+    "speaker_context": "patient",
+    "notes": "Patient describing fever, body ache, and headache in Hindi"
+  },
+  {
+    "audio_file": "audio/hi_consultation_03.wav",
+    "reference_transcript": "मैं आपको पैरासिटामोल पाँच सौ मिलीग्राम दिन में दो बार खाने के बाद लिख रहा हूँ। पाँच दिन तक लेना है।",
+    "language": "hindi",
+    "speaker_context": "doctor",
+    "notes": "Hindi prescription with dosage and frequency"
+  },
+  {
+    "audio_file": "audio/hi_consultation_04.wav",
+    "reference_transcript": "मेरा ब्लड प्रेशर बहुत बढ़ा हुआ है। मैं रोज सुबह एक गोली लेता हूँ लेकिन फायदा नहीं हो रहा।",
+    "language": "hindi",
+    "speaker_context": "patient",
+    "notes": "Patient discussing chronic blood pressure issue"
+  },
+  {
+    "audio_file": "audio/hi_consultation_05.wav",
+    "reference_transcript": "आपकी शुगर थोड़ी बढ़ी हुई है। मैं आपको मेटफॉर्मिन पाँच सौ मिलीग्राम दिन में दो बार खाने से पहले लिख रहा हूँ। मीठा कम करें और रोज आधा घंटा चलें।",
+    "language": "hindi",
+    "speaker_context": "doctor",
+    "notes": "Complex Hindi prescription with lifestyle advice"
+  }
+]

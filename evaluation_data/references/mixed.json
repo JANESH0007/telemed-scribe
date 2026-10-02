@@ -1,0 +1,37 @@
+[
+  {
+    "audio_file": "audio/mix_consultation_01.wav",
+    "reference_transcript": "Mujhe three days se fever hai aur headache bhi hai.",
+    "language": "mixed",
+    "speaker_context": "patient",
+    "notes": "Classic Hindi-English code-mixed: Hindi structure with English medical terms and numbers"
+  },
+  {
+    "audio_file": "audio/mix_consultation_02.wav",
+    "reference_transcript": "Doctor sahab, mera blood pressure bahut high hai. Main daily morning mein amlodipine 5 mg le raha hoon.",
+    "language": "mixed",
+    "speaker_context": "patient",
+    "notes": "Code-mixed with medication name, dosage, and frequency in English"
+  },
+  {
+    "audio_file": "audio/mix_consultation_03.wav",
+    "reference_transcript": "Aapko paracetamol 500 mg twice daily lena hai after food. Agar fever kam nahi hota toh wapas aana.",
+    "language": "mixed",
+    "speaker_context": "doctor",
+    "notes": "Doctor giving prescription in code-mixed Hindi-English"
+  },
+  {
+    "audio_file": "audio/mix_consultation_04.wav",
+    "reference_transcript": "Mujhe last week se cough hai aur throat mein pain bhi hai. Raat ko breathing mein problem hoti hai.",
+    "language": "mixed",
+    "speaker_context": "patient",
+    "notes": "Symptoms described in code-mixed language"
+  },
+  {
+    "audio_file": "audio/mix_consultation_05.wav",
+    "reference_transcript": "Main aapko azithromycin 500 mg once daily prescribe kar raha hoon for five days. Saath mein cetirizine 10 mg raat ko lena. Agar symptoms improve nahi hote toh chest X-ray karwa lena.",
+    "language": "mixed",
+    "speaker_context": "doctor",
+    "notes": "Complex code-mixed prescription with multiple medications and investigation advice"
+  }
+]

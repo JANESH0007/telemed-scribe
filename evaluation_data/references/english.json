@@ -1,0 +1,37 @@
+[
+  {
+    "audio_file": "audio/en_consultation_01.wav",
+    "reference_transcript": "Good morning, I am Doctor Sharma. How are you feeling today? Can you tell me your symptoms?",
+    "language": "english",
+    "speaker_context": "doctor",
+    "notes": "Standard consultation greeting"
+  },
+  {
+    "audio_file": "audio/en_consultation_02.wav",
+    "reference_transcript": "I have been having a headache for the past three days. It gets worse in the evening. I also feel nauseous sometimes.",
+    "language": "english",
+    "speaker_context": "patient",
+    "notes": "Patient describing symptoms with duration"
+  },
+  {
+    "audio_file": "audio/en_consultation_03.wav",
+    "reference_transcript": "I am prescribing you paracetamol 500 mg twice daily after food for five days. If the headache persists, please come back for a follow-up.",
+    "language": "english",
+    "speaker_context": "doctor",
+    "notes": "Prescription with medication name, dosage, frequency, and duration"
+  },
+  {
+    "audio_file": "audio/en_consultation_04.wav",
+    "reference_transcript": "My blood pressure has been high lately. I am currently taking amlodipine 5 mg once daily in the morning. Should I increase the dose?",
+    "language": "english",
+    "speaker_context": "patient",
+    "notes": "Patient with chronic condition mentioning current medication"
+  },
+  {
+    "audio_file": "audio/en_consultation_05.wav",
+    "reference_transcript": "Your blood sugar levels are slightly elevated. I would recommend metformin 500 mg twice daily before meals. Also, please reduce your sugar intake and walk for thirty minutes every day.",
+    "language": "english",
+    "speaker_context": "doctor",
+    "notes": "Complex prescription with lifestyle advice"
+  }
+]
