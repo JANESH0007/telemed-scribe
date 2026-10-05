@@ -20,6 +20,12 @@ protobuf>=3.20.0              # Required by sentencepiece
 jiwer>=3.0.0                  # Word Error Rate calculation
 editdistance>=0.8.1           # Edit distance for error analysis
 
+# --- Extraction (Person B) ---
+peft>=0.7.0                   # For LoRA fine-tuning and loading
+accelerate>=0.25.0            # For efficient model loading
+datasets>=2.16.0              # For training datasets (optional for inference)
+
+
 # --- Data & Config ---
 pydantic>=2.5.0               # Data validation and schemas
 pydantic-settings>=2.1.0      # Settings management from env vars

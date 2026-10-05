@@ -73,3 +73,10 @@ hf_cache/
 # Temporary test audio
 test_audio.wav
 test_hindi.wav
+
+# Person B: Trained LoRA weights (too large for GitHub, download from Colab)
+lora-medical-t5/
+checkpoint-*/
+
+# Person B: Large synthetic dataset (regenerate using generate_large_dataset.py)
+medical_dataset.json
