@@ -1,0 +1,73 @@
+--- a/db/repository.py
++++ b/db/repository.py
+@@ -20,6 +20,9 @@
+     """Raised on any write to a finalized report."""
+ 
+ 
++_STATUS_ORDER = [c.value for c in ConsultationStatus]  # created < transcribed < extracted < pending_review < finalized
++
++
+ def _id() -> str:
+     return uuid.uuid4().hex
+ 
+@@ -57,9 +60,19 @@
+         return cid
+ 
+     def _set_status(self, cid: str, status: ConsultationStatus) -> None:
+-        r = self.db.consultations.update_one({"_id": cid}, {"$set": {"status": status.value}})
+-        if r.matched_count == 0:
++        """Move status forward only (a re-run must never pull a visit back from pending_review/finalized)."""
++        earlier = _STATUS_ORDER[: _STATUS_ORDER.index(status.value)]
++        r = self.db.consultations.update_one(
++            {"_id": cid, "status": {"$in": earlier}}, {"$set": {"status": status.value}})
++        if r.matched_count == 0 and not self.db.consultations.find_one({"_id": cid}, {"_id": 1}):
++            raise NotFoundError(f"consultation {cid}")
++
++    def _assert_not_finalized(self, cid: str) -> None:
++        c = self.db.consultations.find_one({"_id": cid}, {"status": 1})
++        if not c:
+             raise NotFoundError(f"consultation {cid}")
++        if c["status"] == ConsultationStatus.FINALIZED.value:
++            raise ReportLockedError(cid)
+ 
+     def list_consultations(self, patient_id: str, limit: int = 50) -> list[dict]:
+         return list(self.db.consultations.find({"patient_id": patient_id})
+@@ -68,6 +81,7 @@
+     # ---------------- transcript (Person A's ConsultationResult) ----------------
+     def save_transcript(self, cid: str, result: Union[dict, Any]) -> None:
+         """Pass ConsultationResult or its .to_dict(). Keeps original + translated text."""
++        self._assert_not_finalized(cid)
+         data = _dump(result)
+         self.db.transcripts.update_one(
+             {"consultation_id": cid},
+@@ -84,12 +98,13 @@
+ 
+     # ---------------- extraction (Person B) ----------------
+     def save_extraction(self, cid: str, extraction: Union[dict, Extraction]) -> None:
+-        data = Extraction(**_dump(extraction)).model_dump()  # validates
+-        self.db.extractions.update_one(
+-            {"consultation_id": cid},
+-            {"$set": {"consultation_id": cid, **data, "saved_at": utcnow()}},
+-            upsert=True,
+-        )
++        self._assert_not_finalized(cid)
++        # exclude_unset: a B-side re-run that omits `medications` must not wipe Phase-4 results
++        data = Extraction(**_dump(extraction)).model_dump(exclude_unset=True)
++        update = {"$set": {"consultation_id": cid, **data, "saved_at": utcnow()}}
++        if "medications" not in data:
++            update["$setOnInsert"] = {"medications": []}
++        self.db.extractions.update_one({"consultation_id": cid}, update, upsert=True)
+         self._set_status(cid, ConsultationStatus.EXTRACTED)
+ 
+     def get_extraction(self, cid: str) -> dict:
+--- a/db/client.py
++++ b/db/client.py
+@@ -12,7 +12,7 @@
+ def get_db() -> Database:
+     uri = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+     name = os.getenv("MONGO_DB", "telemed_scribe")
+-    return MongoClient(uri, serverSelectionTimeoutMS=3000)[name]
++    return MongoClient(uri, serverSelectionTimeoutMS=3000, tz_aware=True)[name]
+ 
+ 
+ def ensure_indexes(db: Database) -> None:

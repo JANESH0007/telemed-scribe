@@ -12,7 +12,7 @@ from pymongo.database import Database
 def get_db() -> Database:
     uri = os.getenv("MONGO_URI", "mongodb://localhost:27017")
     name = os.getenv("MONGO_DB", "telemed_scribe")
-    return MongoClient(uri, serverSelectionTimeoutMS=3000)[name]
+    return MongoClient(uri, serverSelectionTimeoutMS=3000, tz_aware=True)[name]
 
 
 def ensure_indexes(db: Database) -> None:

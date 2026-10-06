@@ -38,3 +38,6 @@ pytest-cov>=4.1.0
 mongomock>=4.0.0    
 # --- Optional: STT Comparison (Phase 10) ---
 # vosk>=0.3.45                # Uncomment to enable Vosk comparison
+faiss-cpu
+sentence-transformers
+numpy
