@@ -22,6 +22,7 @@ def run_rag(store, cid: str, med_rag: MedicationRAG, hist_rag: PatientHistoryRAG
     results = med_rag.check_prescription_text(ex.get("prescriptions", ""))
     hits = hist_rag.retrieve(store, patient_id, ex.get("symptoms", ""), ex.get("diagnosis", ""), exclude=cid, k=k)
     return {
+        "medication_checks": [r.to_dict() for r in results],                  # every drug, flagged or not
         "medications": [r.medication.model_dump() for r in results],          # for Extraction.medications
         "medication_flags": [r.to_dict() for r in results if r.flags],        # for Report.medication_flags
         "history_context": [h.to_dict() for h in hits],                       # for Report.history_context

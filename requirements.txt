@@ -41,3 +41,8 @@ mongomock>=4.0.0
 faiss-cpu
 sentence-transformers
 numpy
+# --- Person D: API ---
+fastapi>=0.110
+uvicorn[standard]
+python-multipart              # audio upload endpoints
+httpx                         # TestClient in tests/test_api.py
