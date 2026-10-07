@@ -20,6 +20,7 @@ from api import pipeline
 from api.schemas import ConsultationIn, FinalizeIn, PatientIn, ReportPatch
 from api.serialization import to_json
 from api.services import BadInput, Services
+from api.workflow_routes import build_router
 from db import NotFoundError, ReportLockedError, Store, ensure_indexes, get_db
 from db.models import Patient
 
@@ -38,6 +39,7 @@ def create_app(store: Optional[Store] = None, services: Optional[Services] = Non
     app = FastAPI(title="TeleMed-Scribe API", version="0.1.0", lifespan=lifespan)
     app.state.store = store
     app.state.services = services or Services()
+    app.state.workflow = None  # WorkflowRunner, created on first use
     app.add_middleware(CORSMiddleware, allow_origins=os.getenv("CORS_ORIGINS", "*").split(","),
                        allow_methods=["*"], allow_headers=["*"])
 
@@ -70,6 +72,8 @@ def create_app(store: Optional[Store] = None, services: Optional[Services] = Non
                     raise HTTPException(413, f"audio larger than {MAX_UPLOAD_MB} MB")
                 out.write(chunk)
         return path
+
+    app.include_router(build_router(save_upload))  # LangGraph workflow (api/workflow_routes.py)
 
     # ---- health ----
     @app.get("/health")
@@ -155,6 +159,5 @@ def create_app(store: Optional[Store] = None, services: Optional[Services] = Non
         return to_json(s.get_report(cid))
 
     return app
-
 
 app = create_app()
