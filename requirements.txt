@@ -49,3 +49,6 @@ fastapi>=0.110
 uvicorn[standard]
 python-multipart              # audio upload endpoints
 httpx                         # TestClient in tests/test_api.py
+
+# --- UI: Streamlit (ui/) ---
+streamlit>=1.50
