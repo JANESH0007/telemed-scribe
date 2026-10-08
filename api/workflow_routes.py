@@ -14,6 +14,8 @@ from typing import Callable, Optional
 
 from fastapi import APIRouter, Depends, File, Query, Request, UploadFile
 from fastapi.responses import PlainTextResponse
+from api.serialization import to_json
+from db import Store
 
 from workflow import ReviewDecision, WorkflowRunner
 
@@ -28,9 +30,16 @@ def get_runner(request: Request) -> WorkflowRunner:
             app.state.workflow = WorkflowRunner(app.state.store, app.state.services)
     return app.state.workflow
 
+def get_store(request: Request) -> Store:
+    return request.app.state.store
 
 def build_router(save_upload: Callable[[UploadFile], str]) -> APIRouter:
     router = APIRouter(tags=["workflow"])
+
+@router.get("/patients", tags=["patients"])
+def list_patients(limit: int = Query(200, ge=1, le=1000), s: Store = Depends(get_store)):
+    """All patients, newest first (used by the Streamlit UI's patient picker)."""
+    return to_json(s.list_patients(limit))
 
     @router.post("/consultations/{cid}/workflow/run")
     def run(cid: str, file: Optional[UploadFile] = File(None),
