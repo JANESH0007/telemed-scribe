@@ -238,3 +238,12 @@ def test_http_error_mapping(client):
     assert client.post(f"/consultations/{cid}/workflow/run", files=audio("x.bad")).status_code == 422
     assert client.post(f"/consultations/{cid}/workflow/run").status_code == 404   # no audio, no transcript
     assert client.get("/consultations/nope/workflow").status_code == 404
+
+def test_http_list_patients(client):
+    assert client.get("/patients").json() == []
+    a = client.post("/patients", json={"name": "Asha"}).json()["id"]
+    b = client.post("/patients", json={"name": "Ravi", "age": 30}).json()["id"]
+    got = client.get("/patients").json()
+    assert [p["id"] for p in got] == [b, a]                       # newest first
+    assert "_id" not in got[0] and isinstance(got[0]["created_at"], str)
+    assert client.get("/patients?limit=1").json()[0]["id"] == b
