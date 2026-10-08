@@ -47,6 +47,10 @@ class Store:
             raise NotFoundError(f"patient {patient_id}")
         return doc
 
+    def list_patients(self, limit: int = 200) -> list[dict]:
+        """Newest first. Feeds the UI's patient picker."""
+        return list(self.db.patients.find().sort("created_at", -1).limit(limit))
+
     # ---------------- consultations ----------------
     def create_consultation(self, patient_id: str) -> str:
         self.get_patient(patient_id)  # fail early on bad id
