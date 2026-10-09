@@ -35,11 +35,10 @@ def get_store(request: Request) -> Store:
 
 def build_router(save_upload: Callable[[UploadFile], str]) -> APIRouter:
     router = APIRouter(tags=["workflow"])
-
-@router.get("/patients", tags=["patients"])
-def list_patients(limit: int = Query(200, ge=1, le=1000), s: Store = Depends(get_store)):
-    """All patients, newest first (used by the Streamlit UI's patient picker)."""
-    return to_json(s.list_patients(limit))
+    @router.get("/patients", tags=["patients"])
+    def list_patients(limit: int = Query(200, ge=1, le=1000), s: Store = Depends(get_store)):
+        """All patients, newest first (used by the Streamlit UI's patient picker)."""
+        return to_json(s.list_patients(limit))
 
     @router.post("/consultations/{cid}/workflow/run")
     def run(cid: str, file: Optional[UploadFile] = File(None),

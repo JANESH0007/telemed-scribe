@@ -38,17 +38,29 @@ def _transcriber(path: str, language):
 
 
 def _extractor(text: str):
-    return {**_BY_ENGLISH[text][6], "raw_output": "demo", "model": "demo-stub"}
+    scenario = _BY_ENGLISH.get(text)
+    if scenario:
+        return {**scenario[6], "raw_output": "demo", "model": "demo-stub"}
+    # Real STT produced text that doesn't match a canned scenario —
+    # return a generic extraction using the transcript as symptoms.
+    return {
+        "symptoms": text,
+        "diagnosis": "(review transcript)",
+        "prescriptions": "",
+        "follow_up": "",
+        "raw_output": text,
+        "model": "demo-stub",
+    }
 
 
 def build_demo_client(seed: bool = True) -> TeleMedClient:
     store = Store(mongomock.MongoClient()["demo"])
     ensure_indexes(store.db)
-    svc = Services(transcriber=_transcriber, extractor=_extractor,
+    svc = Services(transcriber=None, extractor=None,
                    med_rag=MedicationRAG.build(embedder=HashingEmbedder()),
                    hist_rag=PatientHistoryRAG(HashingEmbedder()))
     client = TeleMedClient(TestClient(create_app(store=store, services=svc)))
-    if seed:  # one patient with a finalized past visit, so "patient history" has something to show
+    if False:  # disabled because fake 3-byte audio crashes real STT pipeline
         pid = client.create_patient("Asha Verma", 42, "F")["id"]
         c1 = client.create_consultation(pid)["id"]
         client.run(c1, ("seed.wav", b"x" * 3, "audio/wav"))      # 3 bytes -> scenario 0

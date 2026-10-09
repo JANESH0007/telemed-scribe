@@ -134,10 +134,13 @@ def process_consultation_audio(
                     logger.info("  Translation skipped (flag set).")
             else:
                 logger.info(
-                    "  Translating %s → English",
+                    "  Translating %s → English (segment by segment)",
                     get_language_name(lang_code),
                 )
-                translated_text = translate_to_english(original_text, lang_code)
+                translated_segments = []
+                for seg in transcript.segments:
+                    translated_segments.append(translate_to_english(seg.text, lang_code))
+                translated_text = " ".join(translated_segments).strip()
                 was_translated = True
                 logger.info("  Translation complete.")
 

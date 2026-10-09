@@ -25,13 +25,13 @@ class WhisperConfig(BaseSettings):
     """Configuration for faster-whisper STT engine."""
 
     model_size: str = Field(
-        default="base",
+        default="large-v3",
         description="Whisper model size: tiny | base | small | medium | large-v2 | large-v3",
     )
     device: str = Field(default="cpu", description="Device: cpu | cuda")
     compute_type: str = Field(
-        default="int8",
-        description="Compute type: int8 (CPU-fast) | float16 (GPU) | float32",
+        default="float32",
+        description="Compute type: int8 (CPU-fast) | float16 (GPU) | float32 | default",
     )
     vad_enabled: bool = Field(default=True, description="Enable VAD filtering")
     vad_threshold: float = Field(

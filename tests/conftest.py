@@ -15,6 +15,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+# Prevent macOS crash due to duplicate OpenMP runtimes between faiss and torch
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
+
 
 # ---------------------------------------------------------------------------
 # Audio file fixtures

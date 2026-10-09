@@ -186,11 +186,30 @@ def transcribe(
     # Load model (cached)
     model = _get_model(config)
 
-    # Build transcription parameters
+    # Build transcription parameters — tuned to prevent hallucination
     transcribe_kwargs = {
         "beam_size": 5,
         "best_of": 5,
         "word_timestamps": False,
+        # Deterministic decoding first, with fallback temperatures
+        "temperature": [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
+        # CRITICAL: prevent the model from conditioning on previous
+        # segments, which is the primary cause of repetition loops
+        # and hallucinated text during silence
+        "condition_on_previous_text": False,
+        # Filter out segments the model thinks are not speech
+        "no_speech_threshold": 0.6,
+        # Filter out low-confidence segments
+        "log_prob_threshold": -1.0,
+        # Filter out repetitive/hallucinated text (high compression = repetition)
+        "compression_ratio_threshold": 2.4,
+        # Detect hallucinations during silent stretches: if a segment
+        # is followed by ≥2s of silence, it's likely hallucinated
+        "hallucination_silence_threshold": 2.0,
+        # Mildly penalize repeated tokens to reduce looping
+        "repetition_penalty": 1.1,
+        # Reset prompt when temperature is raised (fallback sampling)
+        "prompt_reset_on_temperature": 0.5,
     }
 
     # VAD filtering
@@ -208,12 +227,31 @@ def transcribe(
     # Run transcription
     segments_generator, info = model.transcribe(audio_path, **transcribe_kwargs)
 
-    # Collect segments
+    # Collect segments, filtering out likely hallucinations at the
+    # segment level based on model confidence scores
     transcript_segments = []
-    for i, seg in enumerate(segments_generator):
+    idx = 0
+    for seg in segments_generator:
+        no_speech = seg.no_speech_prob if seg.no_speech_prob is not None else 0.0
+        avg_lp = seg.avg_logprob if seg.avg_logprob is not None else 0.0
+        text = seg.text.strip()
+
+        # Skip empty segments
+        if not text:
+            continue
+
+        # Skip segments the model is very uncertain about
+        if no_speech > 0.6 and avg_lp < -1.0:
+            logger.debug(
+                "Dropping low-confidence segment [%.1f-%.1fs]: "
+                "no_speech_prob=%.3f, avg_logprob=%.3f, text=%r",
+                seg.start, seg.end, no_speech, avg_lp, text,
+            )
+            continue
+
         transcript_segments.append(
             TranscriptSegment(
-                id=i,
+                id=idx,
                 start=round(seg.start, 3),
                 end=round(seg.end, 3),
                 text=seg.text,
@@ -221,6 +259,7 @@ def transcribe(
                 no_speech_prob=round(seg.no_speech_prob, 4) if seg.no_speech_prob else None,
             )
         )
+        idx += 1
 
     # Join and normalize
     raw_joined = join_segments(transcript_segments)

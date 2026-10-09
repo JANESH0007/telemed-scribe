@@ -11,6 +11,12 @@ from __future__ import annotations
 
 import json
 import os
+
+# CRITICAL MACOS FIX: Prevent segmentation faults from OpenMP / Accelerate in multi-threaded environments
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+os.environ["OBJC_DISABLE_INITIALIZE_FORK_SAFETY"] = "YES"
+os.environ["OMP_NUM_THREADS"] = "1"
+
 import sys
 from pathlib import Path
 
